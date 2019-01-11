@@ -1,0 +1,2 @@
+# model_status_selection
+ベイズ境界不確かさを用いた最適モデル状態選択
