@@ -1,2 +1,4 @@
 # model_status_selection
 ベイズ境界不確かさを用いた最適モデル状態選択
+
+srcがあるディレクトリにGMM_2class_400.datを置き， Mainクラスを実行する
