@@ -19,35 +19,34 @@ public class Main {
 	private final static int NUM_OF_PAIRS = 1000;
 	private final static int K = 6; // Use for kNN to estimate posterior probabilities
 	private final static int R = 10; // the number of splits
-	
+
     public static void main(String args[]) {
-    	
+
     	/*ファイルを読み込み，リストに変換*/
     	FileUtil fileUtil = new FileUtil(FILE_NAME);
     	List<List<Double>> data = fileUtil.readFile();
-    	
+
     	/*パラメータ候補を作成する*/
     	Map<Integer, List<Double>> candidateStatuses = new LinkedHashMap<>();
     	candidateStatuses.put(1, Arrays.asList(0.0001));
-    	for(int k=1; k<=150; k++) {
+    	for(int k=1; k<=320; k++) {
     		if(k%10==0) {
     			candidateStatuses.put(k, Arrays.asList(0.0001));
     		}
     	}
     	int bestK = 1;
     	double bestThreshold = 0.0001;
-    	double bestUncertainlyMeasure = 0;	
+    	double bestUncertainlyMeasure = 0;
     	double uncertainlyMeasure = 0;
     	/*すべてのパラメータ候補に対して*/
     	for(int k : candidateStatuses.keySet()){
     		for(double threshold: candidateStatuses.get(k)) {
     			/*K-平均法を用いた分類*/
-    			List<List<Double>> newData = data.subList(0, 320);
-    			KMeansCluster kmeans = new KMeansCluster(newData, /*k=*/k, /*threshold=*/threshold, /*num of class=*/2);
-    			kmeans.run();	
+    			KMeansCluster kmeans = new KMeansCluster(data, /*k=*/k, /*threshold=*/threshold, /*num of class=*/2);
+    			kmeans.run();
     			List<List<Double>> classifier = kmeans.getClassifier();
     			List<List<Double>> classifiedData = classifier(data, classifier);
-    			
+
     			/*モデル状態選択*/
     			ModelStatusSelection modelStatusSelection = new ModelStatusSelection(classifiedData, classifier, K, NUM_OF_PAIRS, R);
     			List<List<Double>> salientSamples = modelStatusSelection.selectSalientSample(classifiedData); // 重要な標本S(Λ)
@@ -58,7 +57,7 @@ public class Main {
     			}else {
     				uncertainlyMeasure = UNCERTAINLY_MEASURE_DEFAULT;
     			}
-    			
+
     			/*U(Λ)の値により，最適なパラメータを更新する*/
     			if(bestUncertainlyMeasure < uncertainlyMeasure) {
     				bestK = k;
@@ -67,16 +66,16 @@ public class Main {
     			}
     			System.out.println("k="+k+", threshold="+threshold+", bestK="+bestK+", U(Λ)="+uncertainlyMeasure);
     		}
-    	};  		
-    	
+    	};
+
     	System.out.println("best parameter: K = " + bestK + ", threshold = "+bestThreshold);
     	System.out.println("max U(Λ) = " + bestUncertainlyMeasure);
-    	
+
    	/*一番良かったパラメータを使ってK-平均法で分類を行い，重要な標本S(Λ)を作成する*/
-    	KMeansCluster kmeans = new KMeansCluster(data, /*k=*/320, bestThreshold, /*num of class=*/2);
-    	kmeans.run();	
+    	KMeansCluster kmeans = new KMeansCluster(data, /*k=*/bestK, bestThreshold, /*num of class=*/2);
+    	kmeans.run();
     	List<List<Double>> classifier = kmeans.getClassifier();
-    	List<List<Double>> classifiedData = classifier(data, classifier);  
+    	List<List<Double>> classifiedData = classifier(data, classifier);
 		ModelStatusSelection modelStatusSelection = new ModelStatusSelection(classifiedData, classifier, K, NUM_OF_PAIRS, R);
 		List<List<Double>> salientSamples = modelStatusSelection.selectSalientSample(classifiedData); // 重要な標本S(Λ)
 		/*U(Λ)の計算*/
@@ -92,7 +91,7 @@ public class Main {
 	    frame.setTitle("特別演習実習");
 	    frame.setVisible(true);
     }
-    
+
     /*与えられたデータに，推定されたクラスの情報を追加して返す*/
     public static List<List<Double>> classifier(List<List<Double>> data, List<List<Double>> classifier) {
     	List<List<Double>> classifiedData = new ArrayList<List<Double>>();
@@ -103,7 +102,7 @@ public class Main {
     	}
     	return classifiedData;
     }
-    
+
     /*識別関数でクラスを推定する*/
 	public static List<Double> estimateClass(List<List<Double>> classifier, List<Double> list){
 		double minGjk = 100000;
@@ -116,7 +115,7 @@ public class Main {
 			if(Gjk<minGjk){
 				minGjk=Gjk;
 				minIndex = t;
-			}	
+			}
 		}
 		return classifier.get(minIndex);
 	}
