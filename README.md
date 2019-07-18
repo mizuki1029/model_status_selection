@@ -3,8 +3,8 @@
 
 
 ## 概要
-ベイズ境界不確かさを用いた最適モデル状態選択モデルを，k平均法で評価する
-[レジュメ](https://drive.google.com/file/d/1ot7IIr3ByMQhO_wUHmboKHJmf8ppj3MC/view?usp=sharing)
+- ベイズ境界不確かさを用いた最適モデル状態選択モデルを，k平均法で評価する
+- [レジュメはこちら](https://drive.google.com/file/d/1ot7IIr3ByMQhO_wUHmboKHJmf8ppj3MC/view?usp=sharing)
 
 ## 環境
 Java 8
